@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Formulario de Propiedad</title>
+</head>
+<body>
+    <h1 th:text="${propiedad.id == null} ? 'Alta de Propiedad' : 'Edición de Propiedad'"></h1>
+    <form th:action="@{/propiedades/guardar}" th:object="${propiedad}" method="post">
+        <input type="hidden" th:field="*{id}" />
+        <div>
+            <label>Dirección:</label>
+            <input type="text" th:field="*{direccion}" required />
+        </div>
+        <div>
+            <label>Ciudad:</label>
+            <select th:field="*{ciudad}" required>
+                <!-- Aquí deberías agregar la lista de ciudades desde el modelo -->
+                <!-- Ejemplo: -->
+                <option th:each="ciudad : ${ciudades}" th:value="${ciudad}" th:text="${ciudad.nombre}"></option>
+            </select>
+        </div>
+        <div>
+            <label>Tipo:</label>
+            <select th:field="*{tipo}" required>
+                <option value="CASA">Casa</option>
+                <option value="DEPARTAMENTO">Departamento</option>
+                <option value="LOCAL">Local</option>
+                <option value="OTRO">Otro</option>
+            </select>
+        </div>
+        <div>
+            <label>Cantidad de Ambientes:</label>
+            <input type="number" th:field="*{cantidadAmbientes}" min="1" required />
+        </div>
+        <div>
+            <label>Metros Cuadrados:</label>
+            <input type="number" th:field="*{metrosCuadrados}" min="1" step="0.1" required />
+        </div>
+        <div>
+            <label>Descripción:</label>
+            <textarea th:field="*{descripcion}"></textarea>
+        </div>
+        <div>
+            <label>Comodidades:</label>
+            <input type="text" th:field="*{comodidades}" />
+        </div>
+        <div>
+            <label>Estado de Disponibilidad:</label>
+            <select th:field="*{estadoDisponibilidad}" required>
+                <option value="DISPONIBLE">Disponible</option>
+                <option value="RESERVADA">Reservada</option>
+                <option value="ALQUILADA">Alquilada</option>
+                <option value="INACTIVA">Inactiva</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit">Guardar</button>
+        </div>
+    </form>
+    <a th:href="@{/propiedades}">Volver al listado</a>
+</body>
+</html>
