@@ -1,9 +1,8 @@
 package PuntoYComa.servicios;
 
+import PuntoYComa.accesoDatos.PropiedadRepository;
 import PuntoYComa.accesoDatos.PublicacionRepository;
-import PuntoYComa.entidades.EstadoPublicacion;
-import PuntoYComa.entidades.HistorialEstadoPublicacion;
-import PuntoYComa.entidades.Publicacion;
+import PuntoYComa.entidades.*;
 import PuntoYComa.excepciones.PublicacionInvalidaException;
 import PuntoYComa.excepciones.RecursoNoEncontradoException;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +35,7 @@ public class PublicacionServiceImpl implements PublicacionService {
         Propiedad propiedadAsociada = propiedadRepository.findById(publicacion.getPropiedad().getId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("La propiedad indicada no existe."));
 
-        if (propiedadAsociada.isEliminada() || !propiedadAsociada.getEstadoDisponibilidad().name().equals("DISPONIBLE")) {
+        if (propiedadAsociada.getEliminada() || propiedadAsociada.getEstadoDisponibilidad() != EstadoDisponibilidad.DISPONIBLE){
             throw new PublicacionInvalidaException("Solo pueden publicarse propiedades activas y en estado DISPONIBLE.");
         }
         boolean existeActiva = publicacionRepository

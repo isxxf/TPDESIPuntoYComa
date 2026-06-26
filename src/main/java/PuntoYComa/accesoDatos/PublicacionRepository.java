@@ -1,6 +1,7 @@
 package PuntoYComa.accesoDatos;
 
 import PuntoYComa.entidades.EstadoPublicacion;
+import PuntoYComa.entidades.Propiedad;
 import PuntoYComa.entidades.Publicacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

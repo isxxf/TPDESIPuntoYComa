@@ -1,13 +1,13 @@
 package PuntoYComa.servicios;
 
+import PuntoYComa.entidades.EstadoDisponibilidad;
 import PuntoYComa.entidades.Propiedad;
 import PuntoYComa.entidades.Ciudad;
-import PuntoYComa.repositorios.PropiedadRepository;
+import PuntoYComa.accesoDatos.PropiedadRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.time.LocalDateTime;
 
 @Service
 public class PropiedadServiceImpl implements PropiedadService {
