@@ -108,7 +108,7 @@
  
     <div>
         <button type="submit">Guardar</button>
-        <a th:href="@{/facturas}">Cancelar</a>
+        <a th:href="@{/templates/facturas}">Cancelar</a>
     </div>
 </form>
  
@@ -118,7 +118,7 @@
      FILTROS (HU 4.4)
      ================================================================ -->
 <h2>Filtrar facturas</h2>
-<form method="get" th:action="@{/facturas}">
+<form method="get" th:action="@{/templates/facturas}">
     <div>
         <label>Estado:</label>
         <select name="estado">
@@ -154,7 +154,7 @@
     </div>
  
     <button type="submit">Filtrar</button>
-    <a th:href="@{/facturas}">Limpiar filtros</a>
+    <a th:href="@{/templates/facturas}">Limpiar filtros</a>
 </form>
  
 <hr />

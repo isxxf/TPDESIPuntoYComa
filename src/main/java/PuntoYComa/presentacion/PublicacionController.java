@@ -38,7 +38,7 @@ public class PublicacionController {
                 propiedadId, ciudad, estado, precioMin, precioMax);
 
         model.addAttribute("publicaciones", publicaciones);
-        return "publicaciones";
+        return "publicaciones/publicaciones";
     }
 
     @PostMapping("/crear-publicacion")
@@ -50,7 +50,7 @@ public class PublicacionController {
             model.addAttribute("mensajeError", e.getMessage());
         }
         cargarListadoEnModel(model);
-        return "publicaciones";
+        return "publicaciones/publicaciones";
     }
 
     @PostMapping("/modificar-publicacion/{id}")
@@ -62,7 +62,7 @@ public class PublicacionController {
             model.addAttribute("mensajeError", e.getMessage());
         }
         cargarListadoEnModel(model);
-        return "publicaciones";
+        return "publicaciones/publicaciones";
     }
 
     @PostMapping("/eliminar-publicacion/{id}")
@@ -74,6 +74,6 @@ public class PublicacionController {
             model.addAttribute("mensajeError", e.getMessage());
         }
         cargarListadoEnModel(model);
-        return "publicaciones";
+        return "publicaciones/publicaciones";
     }
 }

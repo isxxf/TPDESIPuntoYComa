@@ -14,7 +14,7 @@
 </div>
 <hr>
 <h2>Filtrar Publicaciones</h2>
-<form th:action="@{/publicaciones}" method="get">
+<form th:action="@{/templates/publicaciones}" method="get">
     <label for="propiedadId">ID Propiedad:</label>
     <input type="number" id="propiedadId" name="propiedadId">
     <label for="ciudad">Ciudad:</label>
@@ -31,7 +31,7 @@
     <label for="precioMax">Precio Máx:</label>
     <input type="number" step="0.01" id="precioMax" name="precioMax">
     <button type="submit">Buscar</button>
-    <a th:href="@{/publicaciones}">Limpiar</a>
+    <a th:href="@{/templates/publicaciones}">Limpiar</a>
 </form>
 
 <hr>

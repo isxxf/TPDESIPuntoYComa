@@ -19,7 +19,7 @@
     <section>
         <h2>Filtros</h2>
 
-        <form method="get" th:action="@{/contratos}">
+        <form method="get" th:action="@{/templates/contratos}">
             <label for="estadoContrato">Estado:</label>
             <select id="estadoContrato" name="estadoContrato">
                 <option value="">Todos</option>
@@ -33,7 +33,7 @@
             <input type="date" id="fechaInicio" name="fechaInicio">
 
             <button type="submit">Buscar</button>
-            <a th:href="@{/contratos}">Limpiar filtros</a>
+            <a th:href="@{/templates/contratos}">Limpiar filtros</a>
         </form>
     </section>
 

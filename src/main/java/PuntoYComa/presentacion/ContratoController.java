@@ -48,7 +48,7 @@ public class ContratoController {
         model.addAttribute("contratos", contratos);
         model.addAttribute("estadosContrato", EstadoContrato.values());
 
-        return "contratos";
+        return "contratos/contratos";
     }
 
     @GetMapping("/nuevo")
@@ -57,7 +57,7 @@ public class ContratoController {
         model.addAttribute("contratos", contratoService.listarNoEliminados());
         model.addAttribute("estadosContrato", EstadoContrato.values());
 
-        return "contratos";
+        return "contratos/contratos";
     }
 
     @PostMapping("/guardar")
@@ -71,7 +71,7 @@ public class ContratoController {
             model.addAttribute("estadosContrato", EstadoContrato.values());
             model.addAttribute("error", e.getMessage());
 
-            return "contratos";
+            return "contratos/contratos";
         }
     }
 
@@ -83,7 +83,7 @@ public class ContratoController {
         model.addAttribute("contratos", contratoService.listarNoEliminados());
         model.addAttribute("estadosContrato", EstadoContrato.values());
 
-        return "contratos";
+        return "contratos/contratos";
     }
 
     @PostMapping("/eliminar/{id}")
@@ -97,7 +97,7 @@ public class ContratoController {
             model.addAttribute("estadosContrato", EstadoContrato.values());
             model.addAttribute("error", e.getMessage());
 
-            return "contratos";
+            return "contratos/contratos";
         }
     }
 }

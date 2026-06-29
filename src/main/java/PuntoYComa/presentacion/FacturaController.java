@@ -61,7 +61,7 @@ public class FacturaController {
         model.addAttribute("filtroFechaDesde", fechaDesde);
         model.addAttribute("filtroFechaHasta", fechaHasta);
 
-        return "facturas";
+        return "facturas/factura";
     }
 
     // HU 4.1 — Mostrar formulario de alta
@@ -70,7 +70,7 @@ public class FacturaController {
         cargarModeloBase(model);
         model.addAttribute("facturas", facturaService.listarNoEliminadas());
         model.addAttribute("factura", new Factura());
-        return "facturas";
+        return "facturas/factura";
     }
 
     // HU 4.1 / 4.2 — Guardar (alta o modificación)
@@ -84,7 +84,7 @@ public class FacturaController {
             model.addAttribute("facturas", facturaService.listarNoEliminadas());
             model.addAttribute("factura", factura);
             model.addAttribute("error", e.getMessage());
-            return "facturas";
+            return "facturas/factura";
         }
     }
 
@@ -96,7 +96,7 @@ public class FacturaController {
             cargarModeloBase(model);
             model.addAttribute("facturas", facturaService.listarNoEliminadas());
             model.addAttribute("factura", factura);
-            return "facturas";
+            return "facturas/factura";
         } catch (RuntimeException e) {
             return "redirect:/facturas";
         }
@@ -113,7 +113,7 @@ public class FacturaController {
             model.addAttribute("facturas", facturaService.listarNoEliminadas());
             model.addAttribute("factura", new Factura());
             model.addAttribute("error", e.getMessage());
-            return "facturas";
+            return "facturas/factura";
         }
     }
 
