@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema Punto y Coma</title>
+</head>
+<body>
+
+<h1>Sistema de Gestion Inmobiliaria - Punto y Coma</h1>
+<p>Bienvenido al panel de administracion. Seleccione una opcion para gestionar el sistema:</p>
+
+<ul>
+    <li><a th:href="@{/propiedades}">ABMC de Propiedades</a></li>
+    <li><a th:href="@{/publicaciones}">ABMC de Publicaciones</a></li>
+    <li><a th:href="@{/contratos}">ABMC de Contratos</a></li>
+    <li><a th:href="@{/facturas}">ABMC de Facturas</a></li>
+</ul>
+
+</body>
+</html>
