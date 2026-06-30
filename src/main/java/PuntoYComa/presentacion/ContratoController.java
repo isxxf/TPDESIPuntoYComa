@@ -1,6 +1,7 @@
 package PuntoYComa.presentacion;
 
 import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -15,14 +16,27 @@ import PuntoYComa.entidades.Contrato;
 import PuntoYComa.entidades.EstadoContrato;
 import PuntoYComa.servicios.ContratoService;
 
+import PuntoYComa.accesoDatos.PersonaRepository;
+import PuntoYComa.accesoDatos.PropiedadRepository;
+import PuntoYComa.entidades.Persona;
+import PuntoYComa.entidades.Propiedad;
+
 @Controller
 @RequestMapping("/contratos")
 public class ContratoController {
 
     private final ContratoService contratoService;
+    private final PropiedadRepository propiedadRepository;
+    private final PersonaRepository personaRepository;
+    
+    public ContratoController(
+            ContratoService contratoService,
+            PropiedadRepository propiedadRepository,
+            PersonaRepository personaRepository) {
 
-    public ContratoController(ContratoService contratoService) {
         this.contratoService = contratoService;
+        this.propiedadRepository = propiedadRepository;
+        this.personaRepository = personaRepository;
     }
 
     @GetMapping
@@ -61,10 +75,49 @@ public class ContratoController {
     }
 
     @PostMapping("/guardar")
-    public String guardarContrato(Contrato contrato, Model model) {
+    public String guardarContrato(
+            Contrato contrato,
+            @RequestParam(required = false) String propiedadId,
+            @RequestParam(required = false) String inquilinoId,
+            Model model) {
+
         try {
+            if (propiedadId == null || propiedadId.isBlank()) {
+                throw new IllegalArgumentException("Debe ingresar el ID de la propiedad");
+            }
+
+            if (inquilinoId == null || inquilinoId.isBlank()) {
+                throw new IllegalArgumentException("Debe ingresar el ID del inquilino");
+            }
+
+            Long idPropiedad = Long.parseLong(propiedadId);
+            Long idInquilino = Long.parseLong(inquilinoId);
+
+            Propiedad propiedad = propiedadRepository.findById(idPropiedad)
+                    .orElseThrow(() ->
+                        new IllegalArgumentException("No existe la propiedad indicada")
+                    );
+
+            Persona inquilino = personaRepository.findById(idInquilino)
+                    .orElseThrow(() ->
+                        new IllegalArgumentException("No existe el inquilino indicado")
+                    );
+
+            contrato.setPropiedad(propiedad);
+            contrato.setInquilino(inquilino);
+
             contratoService.guardar(contrato);
+
             return "redirect:/contratos";
+
+        } catch (NumberFormatException e) {
+            model.addAttribute("contrato", contrato);
+            model.addAttribute("contratos", contratoService.listarNoEliminados());
+            model.addAttribute("estadosContrato", EstadoContrato.values());
+            model.addAttribute("error", "Los IDs de propiedad e inquilino deben ser números válidos");
+
+            return "contratos/contratos";
+
         } catch (RuntimeException e) {
             model.addAttribute("contrato", contrato);
             model.addAttribute("contratos", contratoService.listarNoEliminados());
