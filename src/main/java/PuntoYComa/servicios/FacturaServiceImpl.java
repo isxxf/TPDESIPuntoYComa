@@ -33,10 +33,16 @@ public class FacturaServiceImpl implements FacturaService {
         boolean esNueva = factura.getId() == null;
 
         if (esNueva) {
-            // HU 4.1: el estado por defecto es PENDIENTE
-            factura.setEstado(EstadoFactura.PENDIENTE);
+            // HU 4.1: si no se eligió estado, el default es PENDIENTE
+            if (factura.getEstado() == null) {
+                factura.setEstado(EstadoFactura.PENDIENTE);
+            }
             validarContratoParaAlta(factura.getContrato());
-            factura.agregarHistorialEstado(EstadoFactura.PENDIENTE);
+            // Si el estado elegido es PAGADA, validar datos de pago antes de registrar historial
+            if (factura.getEstado() == EstadoFactura.PAGADA) {
+                validarDatosPago(factura);
+            }
+            factura.agregarHistorialEstado(factura.getEstado());
         } else {
             Factura facturaExistente = buscarPorId(factura.getId());
 
@@ -145,7 +151,7 @@ public class FacturaServiceImpl implements FacturaService {
     private void validarContratoParaAlta(Contrato contrato) {
         Contrato contratoReal = contratoRepository.findById(contrato.getId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new RecursoNoEncontradoException(
                                 "No se encontró el contrato con id " + contrato.getId()));
 
         if (Boolean.TRUE.equals(contratoReal.getEliminado())) {
