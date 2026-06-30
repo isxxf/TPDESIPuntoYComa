@@ -14,11 +14,16 @@
 </div>
 <hr>
 <h2>Filtrar Publicaciones</h2>
-<form th:action="@{/templates/publicaciones}" method="get">
-    <label for="propiedadId">ID Propiedad:</label>
+<form th:action="@{/publicaciones}" method="get">
+    <label for="propiedadId">Filtrar por Propiedad (ID):</label>
     <input type="number" id="propiedadId" name="propiedadId">
     <label for="ciudad">Ciudad:</label>
-    <input type="text" id="ciudad" name="ciudad">
+    <select id="ciudad" name="ciudad">
+        <option value="">Todas las ciudades</option>
+        <option th:each="c : ${ciudades}"
+                th:value="${c.nombre}"
+                th:text="${c.nombre}"></option>
+    </select>
     <label for="estado">Estado:</label>
     <select id="estado" name="estado">
         <option value="">Todos</option>
@@ -31,15 +36,16 @@
     <label for="precioMax">Precio Máx:</label>
     <input type="number" step="0.01" id="precioMax" name="precioMax">
     <button type="submit">Buscar</button>
-    <a th:href="@{/templates/publicaciones}">Limpiar</a>
+    <a th:href="@{/publicaciones}">Limpiar</a>
 </form>
 
 <hr>
-<h2>Listado de Publicaciones</h2>
-<table>
+<h2>Lista de Publicaciones</h2>
+<table border="1">
     <thead>
     <tr>
-        <th>ID</th>
+        <th>Pub. ID</th>
+        <th>Prop. ID</th>
         <th>Dirección</th>
         <th>Ciudad</th>
         <th>Precio Mensual</th>
@@ -51,6 +57,7 @@
     <tbody>
     <tr th:each="pub : ${publicaciones}">
         <td th:text="${pub.id}"></td>
+        <td th:text="${pub.propiedad.id}"></td>
         <td th:text="${pub.propiedad.direccion}"></td>
         <td th:text="${pub.propiedad.ciudad.nombre}"></td>
         <td th:text="'$' + ${pub.precioMensual}"></td>
@@ -72,32 +79,33 @@
 <h2>Registrar Nueva Publicación</h2>
 <form th:action="@{/publicaciones/crear-publicacion}" method="post">
     <div>
-        <label for="propiedad.id">ID de Propiedad (*):</label>
-        <input type="number" id="propiedad.id" name="propiedad.id" required>
+        <label for="propiedad">Seleccione la Propiedad (*):</label>
+        <select id="propiedad" name="propiedad.id" required>
+            <option value="" disabled selected>Seleccione una propiedad...</option>
+            <option th:each="prop : ${propiedadesDisponibles}"
+                    th:if="${prop.estadoDisponibilidad.toString() == 'DISPONIBLE'}"
+                    th:value="${prop.id}"
+                    th:text="${prop.direccion + ' (' + prop.ciudad.nombre + ')'}">
+            </option>
+        </select>
     </div>
     <br>
     <div>
-        <label for="precioMensual">Precio Mensual ($) (*):</label>
-        <input type="number" step="0.01" id="precioMensual" name="precioMensual" required>
+        <label for="precioMensual">Precio mensual ($) (*):</label>
+        <input type="number" step="0.01" id="precioMensual" name="precioMensual" min="0.01" required>
+        <div>
+            <label for="condiciones">Condiciones (*):</label><br>
+            <textarea id="condiciones" name="condiciones" required rows="3" cols="40"></textarea>
+        </div>
+        <br>
+        <div>
+            <label for="descripcion">Descripción (*):</label><br>
+            <textarea id="descripcion" name="descripcion" required rows="3" cols="40"></textarea>
+        </div>
     </div>
     <br>
     <div>
-        <label for="fechaPublicacion">Fecha de Publicación (*):</label>
-        <input type="date" id="fechaPublicacion" name="fechaPublicacion" required>
-    </div>
-    <br>
-    <div>
-        <label for="condiciones">Condiciones (*):</label><br>
-        <textarea id="condiciones" name="condiciones" rows="3" cols="40" required></textarea>
-    </div>
-    <br>
-    <div>
-        <label for="descripcion">Descripción (*):</label><br>
-        <textarea id="descripcion" name="descripcion" rows="3" cols="40" required></textarea>
-    </div>
-    <br>
-    <div>
-        <button type="submit">Guardar Publicación</button>
+        <button type="submit">Guardar publicación</button>
     </div>
 </form>
 </body>
