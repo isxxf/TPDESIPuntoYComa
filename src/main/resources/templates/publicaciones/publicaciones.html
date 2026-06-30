@@ -46,11 +46,13 @@
     <tr>
         <th>Pub. ID</th>
         <th>Prop. ID</th>
-        <th>Dirección</th>
         <th>Ciudad</th>
+        <th>Dirección</th>
         <th>Precio Mensual</th>
-        <th>Fecha Pub.</th>
         <th>Estado</th>
+        <th>Fecha Pub.</th>
+        <th>Condiciones</th>
+        <th>Descripción</th>
         <th>Acciones</th>
     </tr>
     </thead>
@@ -58,20 +60,25 @@
     <tr th:each="pub : ${publicaciones}">
         <td th:text="${pub.id}"></td>
         <td th:text="${pub.propiedad.id}"></td>
-        <td th:text="${pub.propiedad.direccion}"></td>
         <td th:text="${pub.propiedad.ciudad.nombre}"></td>
+        <td th:text="${pub.propiedad.direccion}"></td>
         <td th:text="'$' + ${pub.precioMensual}"></td>
-        <td th:text="${pub.fechaPublicacion}"></td>
         <td th:text="${pub.estado}"></td>
+        <td th:text="${pub.fechaPublicacion}"></td>
+        <td th:text="${pub.condiciones}"></td>
+        <td th:text="${pub.descripcion}"></td>
         <td>
             <a th:href="@{/publicaciones/editar/{id}(id=${pub.id})}">Editar</a>
-            <form th:action="@{/publicaciones/eliminar-publicacion/{id}(id=${pub.id})}" method="post" style="display:inline;">
-                <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación?');">Eliminar</button>
+            <form th:action="@{/publicaciones/eliminar-publicacion/{id}(id=${pub.id})}" method="post"
+                  style="display:inline;">
+                <button type="submit"
+                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta publicación?');">Eliminar
+                </button>
             </form>
         </td>
     </tr>
     <tr th:if="${#lists.isEmpty(publicaciones)}">
-        <td colspan="7">No se encontraron publicaciones registradas.</td>
+        <td colspan="10">No se encontraron publicaciones registradas.</td>
     </tr>
     </tbody>
 </table>
