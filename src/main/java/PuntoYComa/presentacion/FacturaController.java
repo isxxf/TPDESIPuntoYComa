@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import PuntoYComa.accesoDatos.PersonaRepository;
 import PuntoYComa.entidades.Contrato;
 import PuntoYComa.entidades.EstadoContrato;
 import PuntoYComa.entidades.EstadoFactura;
@@ -16,6 +17,7 @@ import PuntoYComa.entidades.Factura;
 import PuntoYComa.entidades.MedioPago;
 import PuntoYComa.servicios.ContratoService;
 import PuntoYComa.servicios.FacturaService;
+import PuntoYComa.servicios.PropiedadService;
 
 @Controller
 @RequestMapping("/facturas")
@@ -23,11 +25,17 @@ public class FacturaController {
 
     private final FacturaService facturaService;
     private final ContratoService contratoService;
+    private final PropiedadService propiedadService;
+    private final PersonaRepository personaRepository;
 
     public FacturaController(FacturaService facturaService,
-                             ContratoService contratoService) {
+                             ContratoService contratoService,
+                             PropiedadService propiedadService,
+                             PersonaRepository personaRepository) {
         this.facturaService = facturaService;
         this.contratoService = contratoService;
+        this.propiedadService = propiedadService;
+        this.personaRepository = personaRepository;
     }
 
     // HU 4.4 — Listado con filtros opcionales
@@ -55,9 +63,10 @@ public class FacturaController {
         model.addAttribute("facturas", facturas);
         model.addAttribute("factura", new Factura());
 
-        // Parámetros de filtro para repintar el formulario de búsqueda
         model.addAttribute("filtroEstado", estado);
         model.addAttribute("filtroContratoId", contratoId);
+        model.addAttribute("filtroPropiedadId", propiedadId);
+        model.addAttribute("filtroInquilinoId", inquilinoId);
         model.addAttribute("filtroFechaDesde", fechaDesde);
         model.addAttribute("filtroFechaHasta", fechaHasta);
 
@@ -75,8 +84,15 @@ public class FacturaController {
 
     // HU 4.1 / 4.2 — Guardar (alta o modificación)
     @PostMapping("/guardar")
-    public String guardarFactura(Factura factura, Model model) {
+    public String guardarFactura(
+            Factura factura,
+            @RequestParam(value = "contratoId", required = false) Long contratoId,
+            Model model) {
         try {
+            if (contratoId != null) {
+                Contrato contrato = contratoService.buscarPorId(contratoId);
+                factura.setContrato(contrato);
+            }
             facturaService.guardar(factura);
             return "redirect:/facturas";
         } catch (RuntimeException e) {
@@ -93,12 +109,32 @@ public class FacturaController {
     public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
         try {
             Factura factura = facturaService.buscarPorId(id);
+
+            if (factura.getEstado() == EstadoFactura.PAGADA) {
+                cargarModeloBase(model);
+                model.addAttribute("facturas", facturaService.listarNoEliminadas());
+                model.addAttribute("factura", new Factura());
+                model.addAttribute("error", "No se puede modificar la factura #" + id + " porque está PAGADA.");
+                return "facturas/factura";
+            }
+            if (factura.getEstado() == EstadoFactura.ANULADA) {
+                cargarModeloBase(model);
+                model.addAttribute("facturas", facturaService.listarNoEliminadas());
+                model.addAttribute("factura", new Factura());
+                model.addAttribute("error", "No se puede modificar la factura #" + id + " porque está ANULADA.");
+                return "facturas/factura";
+            }
+
             cargarModeloBase(model);
             model.addAttribute("facturas", facturaService.listarNoEliminadas());
             model.addAttribute("factura", factura);
             return "facturas/factura";
         } catch (RuntimeException e) {
-            return "redirect:/facturas";
+            cargarModeloBase(model);
+            model.addAttribute("facturas", facturaService.listarNoEliminadas());
+            model.addAttribute("factura", new Factura());
+            model.addAttribute("error", e.getMessage());
+            return "facturas/factura";
         }
     }
 
@@ -117,19 +153,16 @@ public class FacturaController {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
     private void cargarModeloBase(Model model) {
-        // Solo contratos activos y no eliminados para el desplegable del formulario
-        List<Contrato> contratosActivos =
-                contratoService.buscarPorEstado(EstadoContrato.ACTIVO);
-        model.addAttribute("contratosActivos", contratosActivos);
-        model.addAttribute("estadosFactura", EstadoFactura.values());
-        model.addAttribute("mediosPago", MedioPago.values());
-        // Lista completa de contratos no eliminados para el filtro del listado
+        model.addAttribute("contratosActivos",
+                contratoService.buscarPorEstado(EstadoContrato.ACTIVO));
         model.addAttribute("todosLosContratos",
                 contratoService.listarNoEliminados());
+        model.addAttribute("todasLasPropiedades",
+                propiedadService.listar());
+        model.addAttribute("todosLosInquilinos",
+                personaRepository.findAll());
+        model.addAttribute("estadosFactura", EstadoFactura.values());
+        model.addAttribute("mediosPago", MedioPago.values());
     }
 }

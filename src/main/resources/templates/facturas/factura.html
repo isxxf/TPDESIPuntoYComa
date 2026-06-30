@@ -1,32 +1,29 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Facturas</title>
 </head>
 <body>
- 
+
 <h1>Facturas</h1>
- 
-<!-- ================================================================
-     MENSAJE DE ERROR
-     ================================================================ -->
+
+<!-- ERROR -->
 <div th:if="${error}" style="color:red; border:1px solid red; padding:8px; margin-bottom:12px;">
     <strong>Error:</strong> <span th:text="${error}"></span>
 </div>
- 
+
 <!-- ================================================================
-     FORMULARIO ALTA / EDICIÓN (HU 4.1 y 4.2)
+     FORMULARIO ALTA / EDICIÓN
      ================================================================ -->
 <h2 th:text="${factura.id == null} ? 'Alta de Factura' : 'Edición de Factura'"></h2>
- 
+
 <form th:action="@{/facturas/guardar}" th:object="${factura}" method="post">
     <input type="hidden" th:field="*{id}" />
- 
-    <!-- Contrato: solo lectura si es edición (no se puede cambiar) -->
+
+    <!-- CONTRATO: selector en alta, solo lectura en edición -->
     <div th:if="${factura.id == null}">
         <label>Contrato asociado:</label>
-        <select name="contrato.id" required>
+        <select name="contratoId" required>
             <option value="">-- Seleccione un contrato activo --</option>
             <option th:each="c : ${contratosActivos}"
                     th:value="${c.id}"
@@ -39,86 +36,81 @@
         <input type="text"
                th:value="${'#' + factura.contrato.id + ' - ' + factura.contrato.propiedad.direccion}"
                readonly />
-        <input type="hidden" name="contrato.id" th:value="${factura.contrato.id}" />
+        <input type="hidden" name="contratoId" th:value="${factura.contrato.id}" />
     </div>
- 
+
     <div>
         <label>Concepto facturado:</label>
         <input type="text" th:field="*{conceptoFacturado}" maxlength="500" required />
     </div>
- 
+
     <div>
         <label>Fecha de emisión:</label>
         <input type="date" th:field="*{fechaEmision}" required />
     </div>
- 
+
     <div>
         <label>Fecha de vencimiento:</label>
         <input type="date" th:field="*{fechaVencimiento}" required />
     </div>
- 
+
     <div>
         <label>Importe:</label>
         <input type="number" th:field="*{importe}" min="0.01" step="0.01" required />
     </div>
- 
-    <!-- Estado: en alta se muestra solo PENDIENTE; en edición se muestran las transiciones -->
+
     <div>
         <label>Estado:</label>
         <select th:field="*{estado}" id="estadoSelect" required onchange="togglePago()">
-            <option th:if="${factura.id == null}" value="PENDIENTE">Pendiente</option>
-            <option th:if="${factura.id != null}"
-                    th:each="e : ${estadosFactura}"
+            <option th:each="e : ${estadosFactura}"
                     th:value="${e}"
-                    th:text="${e}">
+                    th:text="${e}"
+                    th:selected="${factura.id == null and e.name() == 'PENDIENTE'}">
             </option>
         </select>
     </div>
- 
-    <!-- Datos de pago (visibles solo cuando estado = PAGADA) -->
-    <fieldset id="datosPago">
-        <legend>Datos de pago (obligatorios si estado es PAGADA)</legend>
- 
+
+    <!-- DATOS DE PAGO (solo visibles si estado = PAGADA) -->
+    <fieldset id="datosPago" style="display:none; border:1px solid #999; padding:10px; margin-top:10px;">
+        <legend><strong>Datos de pago</strong> (obligatorios cuando estado = PAGADA)</legend>
+
         <div>
             <label>Fecha de pago:</label>
             <input type="date" th:field="*{fechaPago}" />
         </div>
- 
+
         <div>
             <label>Medio de pago:</label>
             <select th:field="*{medioPago}">
                 <option value="">-- Sin medio de pago --</option>
-                <option th:each="m : ${mediosPago}"
-                        th:value="${m}"
-                        th:text="${m}">
-                </option>
+                <option th:each="m : ${mediosPago}" th:value="${m}" th:text="${m}"></option>
             </select>
         </div>
- 
+
         <div>
             <label>Importe pagado:</label>
             <input type="number" th:field="*{importePagado}" min="0.01" step="0.01" />
         </div>
- 
+
         <div>
             <label>Interés (opcional):</label>
             <input type="number" th:field="*{interes}" min="0" step="0.01" />
         </div>
     </fieldset>
- 
+
     <div>
         <button type="submit">Guardar</button>
-        <a th:href="@{/templates/facturas}">Cancelar</a>
+        <a th:href="@{/facturas}">Cancelar</a>
     </div>
 </form>
- 
+
 <hr />
- 
+
 <!-- ================================================================
-     FILTROS (HU 4.4)
+     FILTROS
      ================================================================ -->
 <h2>Filtrar facturas</h2>
-<form method="get" th:action="@{/templates/facturas}">
+<form method="get" th:action="@{/facturas}">
     <div>
         <label>Estado:</label>
         <select name="estado">
@@ -130,7 +122,7 @@
             </option>
         </select>
     </div>
- 
+
     <div>
         <label>Contrato:</label>
         <select name="contratoId">
@@ -142,29 +134,53 @@
             </option>
         </select>
     </div>
- 
+
+    <div>
+        <label>Propiedad:</label>
+        <select name="propiedadId">
+            <option value="">-- Todas --</option>
+            <option th:each="p : ${todasLasPropiedades}"
+                    th:value="${p.id}"
+                    th:text="${p.direccion}"
+                    th:selected="${p.id == filtroPropiedadId}">
+            </option>
+        </select>
+    </div>
+
+    <div>
+        <label>Inquilino:</label>
+        <select name="inquilinoId">
+            <option value="">-- Todos --</option>
+            <option th:each="i : ${todosLosInquilinos}"
+                    th:value="${i.id}"
+                    th:text="${i.nombre + ' ' + i.apellido}"
+                    th:selected="${i.id == filtroInquilinoId}">
+            </option>
+        </select>
+    </div>
+
     <div>
         <label>Vencimiento desde:</label>
         <input type="date" name="fechaDesde" th:value="${filtroFechaDesde}" />
     </div>
- 
+
     <div>
         <label>Vencimiento hasta:</label>
         <input type="date" name="fechaHasta" th:value="${filtroFechaHasta}" />
     </div>
- 
+
     <button type="submit">Filtrar</button>
-    <a th:href="@{/templates/facturas}">Limpiar filtros</a>
+    <a th:href="@{/facturas}">Limpiar filtros</a>
 </form>
- 
+
 <hr />
- 
+
 <!-- ================================================================
-     LISTADO (HU 4.4)
+     LISTADO
      ================================================================ -->
 <h2>Listado de Facturas</h2>
 <a th:href="@{/facturas/nuevo}">Nueva Factura</a>
- 
+
 <table border="1">
     <thead>
         <tr>
@@ -192,13 +208,21 @@
             <td th:text="${f.importe}"></td>
             <td th:text="${f.estado}"></td>
             <td>
-                <a th:href="@{'/facturas/editar/' + ${f.id}}">Editar</a> |
-                <form th:action="@{'/facturas/eliminar/' + ${f.id}}"
+                <!-- Editar: solo si no es PAGADA ni ANULADA -->
+                <a th:if="${f.estado.name() != 'PAGADA' and f.estado.name() != 'ANULADA'}"
+                   th:href="@{'/facturas/editar/' + ${f.id}}">Editar</a>
+                <span th:if="${f.estado.name() == 'PAGADA' or f.estado.name() == 'ANULADA'}"
+                      style="color:gray;">Editar</span>
+                |
+                <!-- Eliminar: solo si no es PAGADA -->
+                <form th:if="${f.estado.name() != 'PAGADA'}"
+                      th:action="@{'/facturas/eliminar/' + ${f.id}}"
                       method="post"
                       style="display:inline"
                       onsubmit="return confirm('¿Confirma la eliminación de la factura #' + /*[[${f.id}]]*/ '?');">
                     <button type="submit">Eliminar</button>
                 </form>
+                <span th:if="${f.estado.name() == 'PAGADA'}" style="color:gray;">Eliminar</span>
             </td>
         </tr>
         <tr th:if="${#lists.isEmpty(facturas)}">
@@ -206,19 +230,15 @@
         </tr>
     </tbody>
 </table>
- 
-<!-- ================================================================
-     SCRIPT: mostrar/ocultar datos de pago según estado
-     ================================================================ -->
+
 <script>
     function togglePago() {
         var estado = document.getElementById('estadoSelect').value;
         var seccion = document.getElementById('datosPago');
         seccion.style.display = (estado === 'PAGADA') ? 'block' : 'none';
     }
-    // Ejecutar al cargar para respetar el estado actual en edición
     document.addEventListener('DOMContentLoaded', togglePago);
 </script>
- 
+
 </body>
 </html>
