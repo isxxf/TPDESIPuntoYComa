@@ -1,5 +1,6 @@
 package PuntoYComa.servicios;
 
+import PuntoYComa.entidades.Ciudad;
 import PuntoYComa.entidades.EstadoPublicacion;
 import PuntoYComa.entidades.Publicacion;
 
@@ -21,4 +22,6 @@ public interface PublicacionService {
                 BigDecimal precioMin,
                 BigDecimal precioMax
         );
+        Publicacion buscarPublicacion(Long id);
+        List<Ciudad> listarCiudades();
 }

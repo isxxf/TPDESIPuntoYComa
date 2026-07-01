@@ -1,5 +1,6 @@
 package PuntoYComa.servicios;
 
+import PuntoYComa.accesoDatos.CiudadRepository;
 import PuntoYComa.accesoDatos.PropiedadRepository;
 import PuntoYComa.accesoDatos.PublicacionRepository;
 import PuntoYComa.entidades.*;
@@ -17,10 +18,12 @@ import java.util.List;
 public class PublicacionServiceImpl implements PublicacionService {
     private final PublicacionRepository publicacionRepository;
     private final PropiedadRepository propiedadRepository;
+    private final CiudadRepository ciudadRepository;
 
-    public PublicacionServiceImpl(PublicacionRepository publicacionRepository, PropiedadRepository propiedadRepository) {
+    public PublicacionServiceImpl(PublicacionRepository publicacionRepository, PropiedadRepository propiedadRepository, CiudadRepository ciudadRepository) {
         this.publicacionRepository = publicacionRepository;
         this.propiedadRepository = propiedadRepository;
+        this.ciudadRepository = ciudadRepository;
     }
 
     @Override
@@ -31,6 +34,12 @@ public class PublicacionServiceImpl implements PublicacionService {
         }
         if (publicacion.getPrecioMensual() == null || publicacion.getPrecioMensual().compareTo(BigDecimal.ZERO) <= 0) {
             throw new PublicacionInvalidaException("El precio mensual debe ser un número positivo.");
+        }
+        if (publicacion.getPropiedad() == null || publicacion.getPropiedad().getId() == null) {
+            throw new PublicacionInvalidaException("Debe seleccionar una propiedad válida.");
+        }
+        if (publicacion.getFechaPublicacion() == null) {
+            throw new PublicacionInvalidaException("La fecha de publicación es requerida.");
         }
         Propiedad propiedadAsociada = propiedadRepository.findById(publicacion.getPropiedad().getId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("La propiedad indicada no existe."));
@@ -44,7 +53,6 @@ public class PublicacionServiceImpl implements PublicacionService {
             throw new PublicacionInvalidaException("Ya existe una publicación activa para esta propiedad.");
         }
 
-        publicacion.setEstado(EstadoPublicacion.ACTIVA);
         publicacion.setEliminada(false);
 
         HistorialEstadoPublicacion historial = new HistorialEstadoPublicacion();
@@ -118,7 +126,22 @@ public class PublicacionServiceImpl implements PublicacionService {
     public List<Publicacion> listarPublicaciones(Long propiedadId, String ciudad,
                                                  EstadoPublicacion estado,
                                                  BigDecimal precioMin, BigDecimal precioMax) {
+        String ciudadFiltro = (ciudad != null && ciudad.trim().isEmpty()) ? null : ciudad;
+        BigDecimal min = (precioMin != null && precioMin.compareTo(BigDecimal.ZERO) <= 0) ? null : precioMin;
+        BigDecimal max = (precioMax != null && precioMax.compareTo(BigDecimal.ZERO) <= 0) ? null : precioMax;
         return publicacionRepository.filtrarPublicaciones(
-                propiedadId, ciudad, estado, precioMin, precioMax);
+                propiedadId, ciudadFiltro, estado, min, max);
+    }
+
+    @Override
+    public Publicacion buscarPublicacion(Long id) {
+        return publicacionRepository.findById(id).orElseThrow(()
+                -> new RecursoNoEncontradoException("Publicacion no encontrada"));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Ciudad> listarCiudades() {
+        return ciudadRepository.findAll();
     }
 }

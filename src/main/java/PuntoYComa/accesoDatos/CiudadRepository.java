@@ -12,3 +12,6 @@ public interface CiudadRepository extends JpaRepository<Ciudad, Long> {
     List<Ciudad> findByEliminadaFalse();
 
 }
+@Repository
+public interface CiudadRepository extends JpaRepository<Ciudad, Long> {
+}

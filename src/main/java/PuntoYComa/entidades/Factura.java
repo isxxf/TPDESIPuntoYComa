@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class Factura {
@@ -35,9 +36,11 @@ public class Factura {
     private String conceptoFacturado;
 
     @NotNull(message = "La fecha de emisión es obligatoria")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaEmision;
 
     @NotNull(message = "La fecha de vencimiento es obligatoria")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaVencimiento;
 
     @NotNull(message = "El importe es obligatorio")
@@ -51,6 +54,7 @@ public class Factura {
     private Boolean eliminada = false;
 
     // Datos de pago — opcionales salvo que el estado sea PAGADA
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaPago;
 
     @Enumerated(EnumType.STRING)
