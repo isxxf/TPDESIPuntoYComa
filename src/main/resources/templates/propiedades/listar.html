@@ -24,9 +24,16 @@
         .badge-ALQUILADA  { background: #fef3cd; color: #856404; }
         .badge-RESERVADA  { background: #cfe2ff; color: #084298; }
         .badge-INACTIVA   { background: #e2e3e5; color: #41464b; }
+		.btn-secondary {
+		    background: #95a5a6;
+		    color: white;
+		    text-decoration: none;
+		    padding: 8px 16px;
+		    border-radius: 4px;
+		}
     </style>
 </head>
-<body>
+<div>
 
 <h1>Propiedades</h1>
 
@@ -76,6 +83,10 @@
             </tr>
         </tbody>
     </table>
+</div>
+<div>
+	<a th:href="@{/}" class="btn-secondary">Volver</a>
+
 </div>
 
 </body>
