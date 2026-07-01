@@ -30,18 +30,26 @@ public class ContratoServiceImpl implements ContratoService {
         Contrato contratoAnterior = null;
         EstadoContrato estadoAnterior = null;
 
+        // Si el contrato ya existe, se recupera su estado anterior
+        // para validar la transición y registrar el historial si corresponde.
         if (contrato.getId() != null) {
             contratoAnterior = buscarPorId(contrato.getId());
             estadoAnterior = contratoAnterior.getEstadoContrato();
+
+            validarTransicionEstado(estadoAnterior, contrato.getEstadoContrato());
         }
 
+        // Antes de activar un contrato se validan las reglas de negocio
+        // relacionadas con la disponibilidad de la propiedad.
         validarActivacion(contrato);
 
+        // Al activar un contrato, la propiedad asociada pasa a estado ALQUILADA.
         if (contrato.getEstadoContrato() == EstadoContrato.ACTIVO) {
             contrato.getPropiedad()
                     .setEstadoDisponibilidad(EstadoDisponibilidad.ALQUILADA);
         }
 
+        // Al finalizar o rescindir un contrato, la propiedad vuelve a estar DISPONIBLE.
         if (contrato.getEstadoContrato() == EstadoContrato.FINALIZADO
                 || contrato.getEstadoContrato() == EstadoContrato.RESCINDIDO) {
 
@@ -53,6 +61,7 @@ public class ContratoServiceImpl implements ContratoService {
         boolean cambioEstado = esNuevo
                 || estadoAnterior != contrato.getEstadoContrato();
 
+        // Se registra historial al crear el contrato o cuando cambia su estado.
         if (cambioEstado) {
             contrato.agregarHistorialEstado(contrato.getEstadoContrato());
         }
@@ -105,6 +114,7 @@ public class ContratoServiceImpl implements ContratoService {
     public void eliminarLogicamente(Long id) {
         Contrato contrato = buscarPorId(id);
 
+        // La eliminación es lógica y solo se permite para contratos en BORRADOR.
         if (contrato.getEstadoContrato() != EstadoContrato.BORRADOR) {
             throw new IllegalStateException(
                 "Solo se pueden eliminar contratos en estado BORRADOR"
@@ -124,6 +134,7 @@ public class ContratoServiceImpl implements ContratoService {
                 );
     }
 
+    // Valida los datos obligatorios y las restricciones básicas del contrato.
     private void validarDatosObligatorios(Contrato contrato) {
         if (contrato == null) {
             throw new IllegalArgumentException(
@@ -172,6 +183,52 @@ public class ContratoServiceImpl implements ContratoService {
         }
     }
 
+    // Controla que los cambios de estado respeten las transiciones válidas:
+    // BORRADOR -> ACTIVO
+    // ACTIVO -> FINALIZADO
+    // ACTIVO -> RESCINDIDO
+    // No se permite volver desde FINALIZADO o RESCINDIDO.
+    private void validarTransicionEstado(
+            EstadoContrato estadoAnterior,
+            EstadoContrato estadoNuevo) {
+
+        if (estadoAnterior == null || estadoNuevo == null) {
+            return;
+        }
+
+        if (estadoAnterior == estadoNuevo) {
+            return;
+        }
+
+        if (estadoAnterior == EstadoContrato.FINALIZADO
+                || estadoAnterior == EstadoContrato.RESCINDIDO) {
+
+            throw new IllegalStateException(
+                "No se puede modificar el estado de un contrato finalizado o rescindido"
+            );
+        }
+
+        if (estadoAnterior == EstadoContrato.BORRADOR
+                && estadoNuevo != EstadoContrato.ACTIVO) {
+
+            throw new IllegalStateException(
+                "Un contrato en borrador solo puede pasar a activo"
+            );
+        }
+
+        if (estadoAnterior == EstadoContrato.ACTIVO
+                && estadoNuevo != EstadoContrato.FINALIZADO
+                && estadoNuevo != EstadoContrato.RESCINDIDO) {
+
+            throw new IllegalStateException(
+                "Un contrato activo solo puede pasar a finalizado o rescindido"
+            );
+        }
+    }
+
+    // Reglas necesarias para activar un contrato:
+    // la propiedad no debe estar eliminada, debe estar disponible
+    // y no debe existir otro contrato activo para la misma propiedad.
     private void validarActivacion(Contrato contrato) {
         if (contrato.getEstadoContrato() != EstadoContrato.ACTIVO) {
             return;
