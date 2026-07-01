@@ -1,38 +1,135 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Editar publicación</title>
+    <meta charset="UTF-8">
+    <title>Editar publicación</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            background: #f4f6f8;
+            color: #333;
+            padding: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #dde1e7;
+            border-radius: 6px;
+            padding: 20px;
+            max-width: 640px;
+        }
+
+        .form-grid div {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            align-items: start;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form-grid div label {
+            font-weight: bold;
+            padding-top: 6px;
+        }
+
+        .form-grid div input,
+        .form-grid div select,
+        .form-grid div textarea {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .form-grid div textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .btn {
+            padding: 7px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #2980b9;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: #fff;
+        }
+
+        .btn:hover {
+            opacity: .88;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+    </style>
 </head>
 <body>
 <h1>Editar publicación</h1>
-<form th:action="@{/publicaciones/modificar-publicacion/{id}(id=${publicacion.id})}" th:object="${publicacion}" method="post">
-  <input type="hidden" th:field="*{id}">
-  <input type="hidden" th:field="*{fechaPublicacion}"> <input type="hidden" th:field="*{eliminada}">        <input type="hidden" th:field="*{propiedad.id}">     <div>
-  <label>Precio mensual ($):</label>
-  <input type="number" step="0.01" th:field="*{precioMensual}" required>
+<div class="card">
+    <form th:action="@{/publicaciones/modificar-publicacion/{id}(id=${publicacion.id})}" th:object="${publicacion}"
+          method="post">
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{eliminada}">
+        <input type="hidden" th:field="*{propiedad.id}">
+        <div class="form-grid">
+            <div>
+                <label for="precioMensual">Precio mensual ($):</label>
+                <input type="number" step="0.01" id="precioMensual" th:field="*{precioMensual}" required>
+            </div>
+            <div>
+                <label for="estado">Estado:</label>
+                <select id="estado" th:field="*{estado}" required>
+                    <option value="ACTIVA">Activa</option>
+                    <option value="PAUSADA">Pausada</option>
+                    <option value="FINALIZADA">Finalizada</option>
+                </select>
+            </div>
+            <div>
+                <label for="fechaPublicacion">Fecha de pub.:</label>
+                <input type="date" id="fechaPublicacion" name="fechaPublicacion" th:value="*{fechaPublicacion}"
+                       required>
+            </div>
+            <div>
+                <label for="condiciones">Condiciones:</label>
+                <textarea id="condiciones" th:field="*{condiciones}" rows="3" required></textarea>
+            </div>
+            <div>
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" rows="3" required></textarea>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a th:href="@{/publicaciones}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
 </div>
-  <br>
-  <div>
-    <label for="estado">Estado de la Publicación:</label>
-    <select id="estado" th:field="*{estado}" required>
-      <option value="ACTIVA">Activa</option>
-      <option value="PAUSADA">Pausada</option>
-      <option value="FINALIZADA">Finalizada</option>
-    </select>
-  </div>
-  <div>
-    <label>Condiciones:</label><br>
-    <textarea th:field="*{condiciones}" rows="3" cols="40" required></textarea>
-  </div>
-  <br>
-  <div>
-    <label>Descripción:</label><br>
-    <textarea th:field="*{descripcion}" rows="3" cols="40" required></textarea>
-  </div>
-  <br>
-  <button type="submit">Guardar cambios</button>
-  <a th:href="@{/publicaciones}">Cancelar</a>
-</form>
 </body>
 </html>

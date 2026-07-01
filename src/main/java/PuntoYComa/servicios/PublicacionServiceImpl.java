@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +38,9 @@ public class PublicacionServiceImpl implements PublicacionService {
         if (publicacion.getPropiedad() == null || publicacion.getPropiedad().getId() == null) {
             throw new PublicacionInvalidaException("Debe seleccionar una propiedad válida.");
         }
+        if (publicacion.getFechaPublicacion() == null) {
+            throw new PublicacionInvalidaException("La fecha de publicación es requerida.");
+        }
         Propiedad propiedadAsociada = propiedadRepository.findById(publicacion.getPropiedad().getId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("La propiedad indicada no existe."));
 
@@ -51,8 +53,6 @@ public class PublicacionServiceImpl implements PublicacionService {
             throw new PublicacionInvalidaException("Ya existe una publicación activa para esta propiedad.");
         }
 
-        publicacion.setFechaPublicacion(LocalDate.now());
-        publicacion.setEstado(EstadoPublicacion.ACTIVA);
         publicacion.setEliminada(false);
 
         HistorialEstadoPublicacion historial = new HistorialEstadoPublicacion();

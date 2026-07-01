@@ -13,6 +13,12 @@ public class Ciudad {
     @Column(nullable = false)
     private boolean eliminada;
 
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    
     public Ciudad() {
     }
 

@@ -12,6 +12,7 @@ public class Propiedad {
     private Long id;
 
     private String direccion;
+    
 
     @Enumerated(EnumType.STRING)
     private TipoPropiedad tipo;
@@ -39,6 +40,10 @@ public class Propiedad {
 
     public Propiedad() {}
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public Long getId() {
         return id;
     }

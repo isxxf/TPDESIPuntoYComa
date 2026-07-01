@@ -1,6 +1,9 @@
 package PuntoYComa.servicios;
 
 import PuntoYComa.entidades.EstadoDisponibilidad;
+import PuntoYComa.accesoDatos.CiudadRepository;
+import PuntoYComa.accesoDatos.PersonaRepository;
+import PuntoYComa.entidades.Persona;
 import PuntoYComa.entidades.Propiedad;
 import PuntoYComa.entidades.Ciudad;
 import PuntoYComa.accesoDatos.PropiedadRepository;
@@ -9,9 +12,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+
 @Service
 public class PropiedadServiceImpl implements PropiedadService {
 
+	@Autowired
+	private CiudadRepository ciudadRepository;
+
+	@Autowired
+	private PersonaRepository personaRepository;
+	
     @Autowired
     private PropiedadRepository propiedadRepository;
 
@@ -26,8 +37,8 @@ public class PropiedadServiceImpl implements PropiedadService {
         }
 
         // Validar duplicado
-        if (propiedadRepository.existsByDireccionAndCiudadAndEliminadaFalse(
-                propiedad.getDireccion(), propiedad.getCiudad())) {
+        if (propiedadRepository.existsByDireccionAndCiudadIdAndEliminadaFalse(
+                propiedad.getDireccion(), propiedad.getCiudad().getId())) {
             throw new RuntimeException("Ya existe una propiedad con la misma dirección y ciudad.");
         }
 
@@ -36,31 +47,50 @@ public class PropiedadServiceImpl implements PropiedadService {
             propiedad.setEstadoDisponibilidad(EstadoDisponibilidad.DISPONIBLE);
         }
 
+        Ciudad ciudad = ciudadRepository.findById(propiedad.getCiudad().getId())
+                .orElseThrow(() -> new RuntimeException("Ciudad no encontrada"));
+
+        Persona propietario = personaRepository.findById(propiedad.getPropietario().getId())
+                .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
+
+        propiedad.setCiudad(ciudad);
+        propiedad.setPropietario(propietario);
+        
         return propiedadRepository.save(propiedad);
     }
 
     @Override
     public Propiedad actualizar(Propiedad propiedad) {
-        // Validar duplicado (no duplicar después de modificar)
+
         if (propiedad.getCantidadAmbientes() <= 0) {
             throw new RuntimeException("La cantidad de ambientes debe ser mayor a 0.");
         }
+
         if (propiedad.getMetrosCuadrados() <= 0) {
             throw new RuntimeException("Los metros cuadrados deben ser positivos.");
         }
 
-        // Validar duplicado (si cambió dirección o ciudad)
-        Propiedad original = propiedadRepository.findById(propiedad.getId()).orElseThrow(() ->
-            new RuntimeException("Propiedad no encontrada."));
-        if (!original.getDireccion().equals(propiedad.getDireccion()) || !original.getCiudad().equals(propiedad.getCiudad())) {
-            if (propiedadRepository.existsByDireccionAndCiudadAndEliminadaFalse(propiedad.getDireccion(), propiedad.getCiudad())) {
-                throw new RuntimeException("Ya existe una propiedad con esa dirección y ciudad.");
-            }
+        if (propiedadRepository.existsByDireccionAndCiudadIdAndEliminadaFalseAndIdNot(
+                propiedad.getDireccion(),
+                propiedad.getCiudad().getId(),
+                propiedad.getId())) {
+
+            throw new RuntimeException("Ya existe una propiedad con esa dirección y ciudad.");
         }
+
+        Ciudad ciudad = ciudadRepository.findById(propiedad.getCiudad().getId())
+                .orElseThrow(() -> new RuntimeException("Ciudad no encontrada"));
+
+        Persona propietario = personaRepository.findById(propiedad.getPropietario().getId())
+                .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
+
+        propiedad.setCiudad(ciudad);
+        propiedad.setPropietario(propietario);
 
         return propiedadRepository.save(propiedad);
     }
-
+    
+    
     @Override
     public void eliminar(Long id) {
         Propiedad propiedad = propiedadRepository.findById(id).orElseThrow(() -> new RuntimeException("Propiedad no encontrada."));

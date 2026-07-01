@@ -1,6 +1,5 @@
 package PuntoYComa.presentacion;
 
-import PuntoYComa.accesoDatos.CiudadRepository;
 import PuntoYComa.entidades.EstadoPublicacion;
 import PuntoYComa.entidades.Propiedad;
 import PuntoYComa.entidades.Publicacion;
@@ -13,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -43,9 +43,17 @@ public class PublicacionController {
         List<Publicacion> publicaciones = publicacionService.listarPublicaciones(
                 propiedadId, ciudad, estado, precioMin, precioMax);
 
+        model.addAttribute("fechaHoy", LocalDate.now());
         model.addAttribute("ciudades", publicacionService.listarCiudades());
         model.addAttribute("publicaciones", publicaciones);
         model.addAttribute("propiedadesDisponibles", propiedadService.listar());
+
+        model.addAttribute("filtroPropiedadId", propiedadId);
+        model.addAttribute("filtroCiudad", ciudad);
+        model.addAttribute("filtroEstado", estado);
+        model.addAttribute("filtroPrecioMin", precioMin);
+        model.addAttribute("filtroPrecioMax", precioMax);
+
         return "publicaciones/publicaciones";
     }
 
