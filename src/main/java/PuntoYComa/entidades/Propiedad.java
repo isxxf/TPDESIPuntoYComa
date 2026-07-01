@@ -39,6 +39,10 @@ public class Propiedad {
 
     public Propiedad() {}
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public Long getId() {
         return id;
     }

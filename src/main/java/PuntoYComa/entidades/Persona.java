@@ -1,5 +1,6 @@
 package PuntoYComa.entidades;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,9 +35,16 @@ public class Persona {
     @Size(max = 20)
     private String telefono;
 
+    @Column(nullable = false)
+    private Boolean eliminada = false;
+
     public Persona() {
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -79,6 +87,14 @@ public class Persona {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public Boolean getEliminada() {
+        return eliminada;
+    }
+
+    public void setEliminada(Boolean eliminada) {
+        this.eliminada = eliminada;
     }
 
     @Override
