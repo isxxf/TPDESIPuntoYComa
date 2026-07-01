@@ -177,10 +177,18 @@
 
             <label>Estado:</label>
             <select th:field="*{estado}" id="estadoSelect" required onchange="togglePago()">
+                <!--
+                    Alta (id==null): mostrar todos los estados.
+                    Edición PENDIENTE: mostrar todos (puede ir a PAGADA, VENCIDA, ANULADA).
+                    Edición VENCIDA: solo VENCIDA y PAGADA.
+                -->
                 <option th:each="e : ${estadosFactura}"
                         th:value="${e}"
                         th:text="${e}"
-                        th:selected="${factura.id == null and e.name() == 'PENDIENTE'}">
+                        th:if="${factura.id == null
+                                 or factura.estado.name() == 'PENDIENTE'
+                                 or (factura.estado.name() == 'VENCIDA'
+                                     and (e.name() == 'VENCIDA' or e.name() == 'PAGADA'))}">
                 </option>
             </select>
 
@@ -189,7 +197,8 @@
                 <legend>Datos de pago (obligatorios si estado = PAGADA)</legend>
                 <div class="form-grid" style="margin-top:10px;">
                     <label>Fecha de pago:</label>
-                    <input type="date" th:field="*{fechaPago}" />
+                    <!-- CAMBIO: id="fechaPagoInput" para limitar max=hoy via JS -->
+                    <input type="date" th:field="*{fechaPago}" id="fechaPagoInput" />
 
                     <label>Medio de pago:</label>
                     <select th:field="*{medioPago}">
@@ -292,6 +301,9 @@
                 <th>Fecha Vencimiento</th>
                 <th>Importe</th>
                 <th>Estado</th>
+                <!-- CAMBIO: columnas de pago -->
+                <th>Fecha Pago</th>
+                <th>Medio Pago</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -310,6 +322,9 @@
                           th:classappend="${'badge-' + f.estado.name()}"
                           th:text="${f.estado}"></span>
                 </td>
+                <!-- CAMBIO: mostrar fecha pago y medio pago, o '-' si no aplica -->
+                <td th:text="${f.fechaPago != null ? f.fechaPago : '-'}"></td>
+                <td th:text="${f.medioPago != null ? f.medioPago : '-'}"></td>
                 <td style="white-space:nowrap;">
                     <a th:if="${f.estado.name() != 'PAGADA' and f.estado.name() != 'ANULADA'}"
                        th:href="@{'/facturas/editar/' + ${f.id}}"
@@ -327,7 +342,8 @@
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(facturas)}">
-                <td colspan="10" style="text-align:center; color:#999; padding:20px;">
+                <!-- CAMBIO: colspan 12 por las 2 columnas nuevas -->
+                <td colspan="12" style="text-align:center; color:#999; padding:20px;">
                     No hay facturas para mostrar.
                 </td>
             </tr>
@@ -341,7 +357,12 @@
         document.getElementById('datosPago').style.display =
             (estado === 'PAGADA') ? 'block' : 'none';
     }
-    document.addEventListener('DOMContentLoaded', togglePago);
+    document.addEventListener('DOMContentLoaded', function() {
+        togglePago();
+        // CAMBIO: limitar fecha de pago a hoy o antes
+        var hoy = new Date().toISOString().split('T')[0];
+        document.getElementById('fechaPagoInput').max = hoy;
+    });
 </script>
 
 </body>
