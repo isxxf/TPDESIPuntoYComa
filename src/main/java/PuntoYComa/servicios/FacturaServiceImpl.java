@@ -38,6 +38,13 @@ public class FacturaServiceImpl implements FacturaService {
                 factura.setEstado(EstadoFactura.PENDIENTE);
             }
             validarContratoParaAlta(factura.getContrato());
+            // No se puede crear una factura VENCIDA si su vencimiento aún no ocurrió
+            if (factura.getEstado() == EstadoFactura.VENCIDA
+                    && !factura.getFechaVencimiento().isBefore(LocalDate.now())) {
+                throw new FacturaInvalidaException(
+                        "No se puede crear una factura en estado VENCIDA cuyo vencimiento "
+                        + "aún no ocurrió (vencimiento: " + factura.getFechaVencimiento() + ")");
+            }
             // Si el estado elegido es PAGADA, validar datos de pago antes de registrar historial
             if (factura.getEstado() == EstadoFactura.PAGADA) {
                 validarDatosPago(factura);
@@ -61,7 +68,7 @@ public class FacturaServiceImpl implements FacturaService {
 
             // HU 4.2: validar transición de estado
             if (facturaExistente.getEstado() != factura.getEstado()) {
-                validarTransicionEstado(facturaExistente.getEstado(), factura.getEstado());
+                validarTransicionEstado(facturaExistente.getEstado(), factura.getEstado(), factura);
                 factura.agregarHistorialEstado(factura.getEstado());
             }
 
@@ -138,6 +145,10 @@ public class FacturaServiceImpl implements FacturaService {
         if (factura.getFechaVencimiento() == null) {
             throw new FacturaInvalidaException("La fecha de vencimiento es obligatoria");
         }
+        if (factura.getFechaEmision().isAfter(LocalDate.now())) {
+            throw new FacturaInvalidaException(
+                    "La fecha de emisión no puede ser una fecha futura");
+        }
         if (factura.getFechaVencimiento().isBefore(factura.getFechaEmision())) {
             throw new FacturaInvalidaException(
                     "La fecha de vencimiento debe ser igual o posterior a la fecha de emisión");
@@ -168,7 +179,7 @@ public class FacturaServiceImpl implements FacturaService {
         }
     }
 
-    private void validarTransicionEstado(EstadoFactura anterior, EstadoFactura nuevo) {
+    private void validarTransicionEstado(EstadoFactura anterior, EstadoFactura nuevo, Factura factura) {
         boolean valida = switch (anterior) {
             case PENDIENTE -> nuevo == EstadoFactura.PAGADA
                            || nuevo == EstadoFactura.VENCIDA
@@ -181,12 +192,28 @@ public class FacturaServiceImpl implements FacturaService {
             throw new FacturaInvalidaException(
                     "Transición de estado no permitida: " + anterior + " → " + nuevo);
         }
+
+        // Una factura solo puede pasar a VENCIDA si su fecha de vencimiento ya pasó
+        if (nuevo == EstadoFactura.VENCIDA
+                && !factura.getFechaVencimiento().isBefore(LocalDate.now())) {
+            throw new FacturaInvalidaException(
+                    "No se puede marcar como VENCIDA una factura cuyo vencimiento aún no ocurrió "
+                    + "(vencimiento: " + factura.getFechaVencimiento() + ")");
+        }
     }
 
     private void validarDatosPago(Factura factura) {
         if (factura.getFechaPago() == null) {
             throw new FacturaInvalidaException(
                     "La fecha de pago es obligatoria cuando la factura está pagada");
+        }
+        if (factura.getFechaPago().isAfter(LocalDate.now())) {
+            throw new FacturaInvalidaException(
+                    "La fecha de pago no puede ser una fecha futura");
+        }
+        if (factura.getFechaPago().isBefore(factura.getFechaEmision())) {
+            throw new FacturaInvalidaException(
+                    "La fecha de pago no puede ser anterior a la fecha de emisión de la factura");
         }
         if (factura.getMedioPago() == null) {
             throw new FacturaInvalidaException(
