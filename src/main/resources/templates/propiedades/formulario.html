@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Propiedad</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 14px; background: #f4f6f8; color: #333; padding: 24px; }
+        h1 { font-size: 24px; margin-bottom: 20px; color: #2c3e50; }
+        .card { background: #fff; border: 1px solid #dde1e7; border-radius: 6px; padding: 20px; max-width: 640px; }
+        .form-grid div { display: grid; grid-template-columns: 220px 1fr; align-items: start; gap: 8px; margin-bottom: 10px; }
+        .form-grid div label { font-weight: bold; padding-top: 6px; }
+        .form-grid div input, .form-grid div select, .form-grid div textarea { padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+        .form-grid div textarea { resize: vertical; min-height: 70px; }
+        .btn { padding: 7px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #2980b9; color: #fff; }
+        .btn-secondary { background: #95a5a6; color: #fff; }
+        .btn:hover { opacity: .88; }
+        .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <h1 th:text="${propiedad.id == null} ? 'Alta de Propiedad' : 'Edición de Propiedad'"></h1>
+	<form th:action="${propiedad.id == null} ? @{/propiedades/guardar} : @{/propiedades/actualizar}"
+	      th:object="${propiedad}"
+	      method="post">
+	        <input type="hidden" th:field="*{id}" />
+        <div>
+            <label>Dirección:</label>
+            <input type="text" th:field="*{direccion}" required />
+        </div>
+        <div>
+            <label>Ciudad:</label>
+			<select th:field="*{ciudad.id}">
+			    <option value="">Seleccione ciudad</option>
+
+			    <option th:each="c : ${ciudades}"
+			            th:value="${c.id}"
+			            th:text="${c.nombre}">
+			    </option>
+			</select>
+			
+		<div>
+
+			    <label>Propietario:</label>
+
+			    <select th:field="*{propietario.id}" required>
+
+			        <option value="">Seleccione un propietario</option>
+
+			        <option th:each="persona : ${personas}"
+			                th:value="${persona.id}"
+			                th:text="${persona.nombre + ' ' + persona.apellido}">
+			        </option>
+
+			    </select>
+
+		</div>
+        </div>
+        <div>
+            <label>Tipo:</label>
+            <select th:field="*{tipo}" required>
+                <option value="CASA">Casa</option>
+                <option value="DEPARTAMENTO">Departamento</option>
+                <option value="LOCAL">Local</option>
+                <option value="OTRO">Otro</option>
+            </select>
+        </div>
+        <div>
+            <label>Cantidad de Ambientes:</label>
+            <input type="number" th:field="*{cantidadAmbientes}" min="1" required />
+        </div>
+        <div>
+            <label>Metros Cuadrados:</label>
+            <input type="number" th:field="*{metrosCuadrados}" min="1" step="0.1" required />
+        </div>
+        <div>
+            <label>Descripción:</label>
+            <textarea th:field="*{descripcion}"></textarea>
+        </div>
+        <div>
+            <label>Comodidades:</label>
+            <input type="text" th:field="*{comodidades}" />
+        </div>
+        <div>
+            <label>Estado de Disponibilidad:</label>
+            <select th:field="*{estadoDisponibilidad}" required>
+                <option value="DISPONIBLE">Disponible</option>
+                <option value="RESERVADA">Reservada</option>
+                <option value="ALQUILADA">Alquilada</option>
+                <option value="INACTIVA">Inactiva</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit">Guardar</button>
+        </div>
+    </form>
+	<a th:href="@{/propiedades}">Volver al listado</a>
+
+<h1 th:text="${propiedad.id == null} ? 'Alta de Propiedad' : 'Edición de Propiedad'"></h1>
+
+<div class="card">
+    <form th:action="@{/propiedades/guardar}" th:object="${propiedad}" method="post">
+        <input type="hidden" th:field="*{id}" />
+        <div class="form-grid">
+            <div>
+                <label>Dirección:</label>
+                <input type="text" th:field="*{direccion}" required />
+            </div>
+            <div>
+                <label>Ciudad:</label>
+                <select th:field="*{ciudad}" required>
+                    <option th:each="ciudad : ${ciudades}" th:value="${ciudad}" th:text="${ciudad.nombre}"></option>
+                </select>
+            </div>
+            <div>
+                <label>Tipo:</label>
+                <select th:field="*{tipo}" required>
+                    <option value="CASA">Casa</option>
+                    <option value="DEPARTAMENTO">Departamento</option>
+                    <option value="LOCAL">Local</option>
+                    <option value="OTRO">Otro</option>
+                </select>
+            </div>
+            <div>
+                <label>Cantidad de ambientes:</label>
+                <input type="number" th:field="*{cantidadAmbientes}" min="1" required />
+            </div>
+            <div>
+                <label>Metros cuadrados:</label>
+                <input type="number" th:field="*{metrosCuadrados}" min="1" step="0.1" required />
+            </div>
+            <div>
+                <label>Descripción:</label>
+                <textarea th:field="*{descripcion}"></textarea>
+            </div>
+            <div>
+                <label>Comodidades:</label>
+                <input type="text" th:field="*{comodidades}" />
+            </div>
+            <div>
+                <label>Estado de disponibilidad:</label>
+                <select th:field="*{estadoDisponibilidad}" required>
+                    <option value="DISPONIBLE">Disponible</option>
+                    <option value="RESERVADA">Reservada</option>
+                    <option value="ALQUILADA">Alquilada</option>
+                    <option value="INACTIVA">Inactiva</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a th:href="@{/templates/propiedades}" class="btn btn-secondary">Volver al listado</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

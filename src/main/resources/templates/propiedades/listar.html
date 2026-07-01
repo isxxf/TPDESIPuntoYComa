@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Propiedades</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 14px; background: #f4f6f8; color: #333; padding: 24px; }
+        h1 { font-size: 24px; margin-bottom: 20px; color: #2c3e50; }
+        h2 { font-size: 16px; margin-bottom: 12px; color: #2c3e50; }
+        .card { background: #fff; border: 1px solid #dde1e7; border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .btn { padding: 7px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block; }
+        .btn-primary   { background: #2980b9; color: #fff; }
+        .btn-danger    { background: #e74c3c; color: #fff; }
+        .btn-small     { padding: 4px 10px; font-size: 12px; }
+        .btn:hover     { opacity: .88; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead tr { background: #2c3e50; color: #fff; }
+        th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        tbody tr:hover { background: #f0f4f8; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+        .badge-DISPONIBLE { background: #d1e7dd; color: #0f5132; }
+        .badge-ALQUILADA  { background: #fef3cd; color: #856404; }
+        .badge-RESERVADA  { background: #cfe2ff; color: #084298; }
+        .badge-INACTIVA   { background: #e2e3e5; color: #41464b; }
+    </style>
+</head>
+<body>
+
+<h1>Propiedades</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Listado de Propiedades</h2>
+        <a th:href="@{/propiedades/nuevo}" class="btn btn-primary">Nueva Propiedad</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Dirección</th>
+                <th>Ciudad</th>
+                <th>Tipo</th>
+                <th>Ambientes</th>
+                <th>Metros²</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="propiedad : ${propiedades}">
+                <td th:text="${propiedad.id}"></td>
+                <td th:text="${propiedad.direccion}"></td>
+                <td th:text="${propiedad.ciudad.nombre}"></td>
+                <td th:text="${propiedad.tipo}"></td>
+                <td th:text="${propiedad.cantidadAmbientes}"></td>
+                <td th:text="${propiedad.metrosCuadrados}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${'badge-' + propiedad.estadoDisponibilidad}"
+                          th:text="${propiedad.estadoDisponibilidad}"></span>
+                </td>
+                <td style="white-space:nowrap;">
+                    <a th:href="@{'/propiedades/editar/' + ${propiedad.id}}"
+                       class="btn btn-primary btn-small">Editar</a>
+                    <a th:href="@{'/propiedades/eliminar/' + ${propiedad.id}}"
+                       class="btn btn-danger btn-small"
+                       onclick="return confirm('¿Seguro que desea eliminar?');">Eliminar</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(propiedades)}">
+                <td colspan="8" style="text-align:center; color:#999; padding:20px;">
+                    No hay propiedades para mostrar.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
