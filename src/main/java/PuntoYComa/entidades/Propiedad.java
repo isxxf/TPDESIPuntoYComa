@@ -12,6 +12,7 @@ public class Propiedad {
     private Long id;
 
     private String direccion;
+    
 
     @Enumerated(EnumType.STRING)
     private TipoPropiedad tipo;
