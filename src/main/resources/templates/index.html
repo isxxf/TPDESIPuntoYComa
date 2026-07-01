@@ -3,18 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <title>Sistema Punto y Coma</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            background: #f4f6f8;
+            color: #333;
+            padding: 40px 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+        .header h1 {
+            font-size: 26px;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: 1px solid #dde1e7;
+            border-radius: 6px;
+            padding: 24px 32px;
+            width: 300px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #2980b9;
+            text-decoration: none;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .menu a:hover {
+            background: #eaf3fb;
+            border-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Sistema de Gestion Inmobiliaria - Punto y Coma</h1>
-<p>Bienvenido al panel de administracion. Seleccione una opcion para gestionar el sistema:</p>
+<div class="header">
+    <h1>Sistema de Gestión Inmobiliaria — Punto y Coma</h1>
+    <p>Bienvenido al panel de administración. Seleccione una opción para gestionar el sistema.</p>
+</div>
 
-<ul>
-    <li><a th:href="@{/propiedades}">ABMC de Propiedades</a></li>
-    <li><a th:href="@{/publicaciones}">ABMC de Publicaciones</a></li>
-    <li><a th:href="@{/contratos}">ABMC de Contratos</a></li>
-    <li><a th:href="@{/facturas}">ABMC de Facturas</a></li>
-</ul>
+<nav class="menu">
+    <a th:href="@{/propiedades}">Propiedades</a>
+    <a th:href="@{/publicaciones}">Publicaciones</a>
+    <a th:href="@{/contratos}">Contratos</a>
+    <a th:href="@{/facturas}">Facturas</a>
+</nav>
 
 </body>
 </html>
