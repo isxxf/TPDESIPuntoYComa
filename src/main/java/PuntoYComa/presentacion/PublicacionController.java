@@ -1,6 +1,5 @@
 package PuntoYComa.presentacion;
 
-import PuntoYComa.accesoDatos.CiudadRepository;
 import PuntoYComa.entidades.EstadoPublicacion;
 import PuntoYComa.entidades.Propiedad;
 import PuntoYComa.entidades.Publicacion;
