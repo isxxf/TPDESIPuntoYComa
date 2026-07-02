@@ -22,3 +22,16 @@ EPIC 1 - PROPIEDADES:
 -Intenta cargar una nueva propiedad en la aplicación.
 -Prueba editar o eliminar una propiedad existente.
 -Controla el listado de tus propiedades.
+
+EPIC 2 - 
+
+EPIC 3 - CONTRATOS
+-Crear un contrato en estado BORRADOR.
+-Editarlo y pasarlo a ACTIVO.
+-Verificar que la propiedad pase a ALQUILADA.
+-Pasarlo a FINALIZADO o RESCINDIDO.
+-Verificar que no permita volver a ACTIVO.
+-Intentar eliminar un contrato ACTIVO.
+-Eliminar un contrato BORRADOR.
+
+EPIC 4 -
