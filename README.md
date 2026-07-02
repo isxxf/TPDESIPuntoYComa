@@ -66,11 +66,11 @@ EPIC 3 - CONTRATOS
 
 EPIC 4 - FACTURAS
 
-Alta de factura: alta exitosa, alta con pago, contrato borrador, fecha inválida e importe cero.
+-Alta de factura: alta exitosa, alta con pago, contrato borrador, fecha inválida e importe cero.
 
-Modificación de factura: cambios entre estados (PENDIENTE → VENCIDA, VENCIDA → PAGADA y PENDIENTE → ANULADA), edición de facturas pagadas o anuladas y cambios inválidos.
+-Modificación de factura: cambios entre estados (PENDIENTE → VENCIDA, VENCIDA → PAGADA y PENDIENTE → ANULADA), edición de facturas pagadas o anuladas y cambios inválidos.
 
-Eliminación de factura: eliminar facturas pendientes o vencidas e intento de eliminar facturas pagadas.
+-Eliminación de factura: eliminar facturas pendientes o vencidas e intento de eliminar facturas pagadas.
 
-Listado y filtros: listado general, filtros por estado, contrato, propiedad, inquilino y fecha, y verificación de columnas.
+-Listado y filtros: listado general, filtros por estado, contrato, propiedad, inquilino y fecha, y verificación de columnas.
 
