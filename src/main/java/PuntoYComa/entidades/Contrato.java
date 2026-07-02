@@ -70,6 +70,10 @@ public class Contrato {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Propiedad getPropiedad() {
         return propiedad;
     }

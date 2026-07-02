@@ -25,7 +25,6 @@
             margin-bottom: 20px;
         }
 
-        /* Error */
         .error-box {
             background: #fdecea;
             border: 1px solid #f5c6cb;
@@ -35,7 +34,6 @@
             margin-bottom: 16px;
         }
 
-        /* Formulario (divs label+input) */
         .form-grid div {
             display: grid;
             grid-template-columns: 200px 1fr;
@@ -44,7 +42,9 @@
             margin-bottom: 10px;
             max-width: 600px;
         }
+
         .form-grid div label { font-weight: bold; }
+
         .form-grid div input,
         .form-grid div select,
         .form-grid div textarea {
@@ -53,27 +53,31 @@
             border-radius: 4px;
             width: 100%;
         }
-        .form-grid div textarea { resize: vertical; min-height: 70px; }
 
-        /* Filtros */
-        .filtros-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: flex-end;
+        .form-grid div textarea {
+            resize: vertical;
+            min-height: 70px;
         }
-        .filtros-form > label { font-weight: bold; font-size: 13px; align-self: flex-end; margin-bottom: 2px; }
-        .filtros-form select,
-        .filtros-form input[type="date"] {
+
+        .filtros-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filtros-grupo label {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .filtros-grupo select,
+        .filtros-grupo input[type="date"] {
             padding: 6px 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
             min-width: 160px;
         }
-        .filtros-grupo { display: flex; flex-direction: column; gap: 4px; }
-        .filtros-grupo label { font-weight: bold; font-size: 13px; }
 
-        /* Botones */
         .btn {
             padding: 7px 16px;
             border: none;
@@ -83,19 +87,34 @@
             text-decoration: none;
             display: inline-block;
         }
+
         .btn-primary   { background: #2980b9; color: #fff; }
         .btn-secondary { background: #95a5a6; color: #fff; }
         .btn-danger    { background: #e74c3c; color: #fff; }
         .btn-small     { padding: 4px 10px; font-size: 12px; }
         .btn:hover     { opacity: .88; }
 
-        /* Tabla */
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        thead tr { background: #2c3e50; color: #fff; }
-        th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        tbody tr:hover { background: #f0f4f8; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
 
-        /* Badges de estado */
+        thead tr {
+            background: #2c3e50;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background: #f0f4f8;
+        }
+
         .badge {
             padding: 3px 8px;
             border-radius: 12px;
@@ -103,15 +122,22 @@
             font-weight: bold;
             white-space: nowrap;
         }
+
         .badge-ACTIVO      { background: #d1e7dd; color: #0f5132; }
         .badge-BORRADOR    { background: #fef3cd; color: #856404; }
         .badge-FINALIZADO  { background: #e2e3e5; color: #41464b; }
         .badge-RESCINDIDO  { background: #f8d7da; color: #842029; }
 
-        .form-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
         .text-muted { color: #aaa; }
     </style>
 </head>
+
 <body>
 
 <h1>Gestión de Contratos</h1>
@@ -126,26 +152,35 @@
      ================================================================ -->
 <div class="card">
     <h2>Filtros</h2>
-    <form method="get" th:action="@{/templates/contratos}">
+
+    <form method="get" th:action="@{/contratos}">
         <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end;">
+
             <div class="filtros-grupo">
                 <label for="estadoContrato">Estado</label>
                 <select id="estadoContrato" name="estadoContrato">
                     <option value="">Todos</option>
                     <option th:each="estado : ${estadosContrato}"
                             th:value="${estado}"
-                            th:text="${estado}">
+                            th:text="${estado}"
+                            th:selected="${estado == filtroEstadoContrato}">
                     </option>
                 </select>
             </div>
+
             <div class="filtros-grupo">
                 <label for="fechaInicio">Fecha de inicio</label>
-                <input type="date" id="fechaInicio" name="fechaInicio">
+                <input type="date"
+                       id="fechaInicio"
+                       name="fechaInicio"
+                       th:value="${filtroFechaInicio != null ? #temporals.format(filtroFechaInicio, 'yyyy-MM-dd') : ''}">
             </div>
+
             <div style="display:flex; gap:8px;">
                 <button type="submit" class="btn btn-primary">Buscar</button>
-                <a th:href="@{/templates/contratos}" class="btn btn-secondary">Limpiar</a>
+                <a th:href="@{/contratos}" class="btn btn-secondary">Limpiar</a>
             </div>
+
         </div>
     </form>
 </div>
@@ -160,34 +195,72 @@
         <input type="hidden" th:field="*{id}">
 
         <div class="form-grid">
-            <div>
-                <label for="propiedad">ID Propiedad:</label>
-                <input type="number" id="propiedad" name="propiedad" placeholder="ID de propiedad">
-            </div>
-            <div>
-                <label for="inquilino">ID Inquilino:</label>
-                <input type="number" id="inquilino" name="inquilino" placeholder="ID de persona/inquilino">
-            </div>
+
+			<div>
+			    <label for="propiedadId">Propiedad:</label>
+			    <select id="propiedadId" name="propiedadId" required>
+			        <option value="">Seleccione una propiedad</option>
+			        <option th:each="propiedad : ${propiedades}"
+			                th:value="${propiedad.id}"
+			                th:text="${propiedad.direccion}"
+			                th:selected="${contrato.propiedad != null && contrato.propiedad.id == propiedad.id}">
+			        </option>
+			    </select>
+			</div>
+
+			<div>
+			    <label for="inquilinoId">Inquilino:</label>
+			    <select id="inquilinoId" name="inquilinoId" required>
+			        <option value="">Seleccione un inquilino</option>
+			        <option th:each="persona : ${personas}"
+			                th:value="${persona.id}"
+			                th:text="${persona.nombre + ' ' + persona.apellido}"
+			                th:selected="${contrato.inquilino != null && contrato.inquilino.id == persona.id}">
+			        </option>
+			    </select>
+			</div>
+
             <div>
                 <label for="fechaInicioForm">Fecha de inicio:</label>
-                <input type="date" id="fechaInicioForm" th:field="*{fechaInicio}">
+                <input type="date"
+                       id="fechaInicioForm"
+                       name="fechaInicio"
+                       th:value="${contrato.fechaInicio != null ? #temporals.format(contrato.fechaInicio, 'yyyy-MM-dd') : ''}"
+                       required>
             </div>
+
             <div>
                 <label for="duracionMeses">Duración en meses:</label>
-                <input type="number" id="duracionMeses" th:field="*{duracionMeses}">
+                <input type="number"
+                       id="duracionMeses"
+                       th:field="*{duracionMeses}"
+                       required>
             </div>
+
             <div>
                 <label for="importeMensual">Importe mensual:</label>
-                <input type="number" step="0.01" id="importeMensual" th:field="*{importeMensual}">
+                <input type="number"
+                       step="0.01"
+                       id="importeMensual"
+                       th:field="*{importeMensual}"
+                       required>
             </div>
+
             <div>
                 <label for="diaVencimientoMensual">Día de vencimiento mensual:</label>
-                <input type="number" id="diaVencimientoMensual" th:field="*{diaVencimientoMensual}">
+                <input type="number"
+                       id="diaVencimientoMensual"
+                       th:field="*{diaVencimientoMensual}"
+                       required>
             </div>
+
             <div>
                 <label for="descripcion">Descripción:</label>
-                <textarea id="descripcion" th:field="*{descripcion}"></textarea>
+                <textarea id="descripcion"
+                          th:field="*{descripcion}"
+                          required></textarea>
             </div>
+
             <div>
                 <label for="estadoContratoForm">Estado:</label>
                 <select id="estadoContratoForm" th:field="*{estadoContrato}">
@@ -197,6 +270,7 @@
                     </option>
                 </select>
             </div>
+
         </div>
 
         <div class="form-actions">
@@ -217,6 +291,7 @@
             <tr>
                 <th>ID</th>
                 <th>Propiedad</th>
+                <th>Propietario</th>
                 <th>Inquilino</th>
                 <th>Fecha inicio</th>
                 <th>Duración</th>
@@ -226,23 +301,35 @@
                 <th>Acciones</th>
             </tr>
         </thead>
+
         <tbody>
             <tr th:each="contrato : ${contratos}">
                 <td th:text="${contrato.id}"></td>
-                <td th:text="${contrato.propiedad != null ? contrato.propiedad.id : 'Sin propiedad'}"></td>
-                <td th:text="${contrato.inquilino != null ? contrato.inquilino.id : 'Sin inquilino'}"></td>
+
+                <td th:text="${contrato.propiedad != null ? contrato.propiedad.direccion : 'Sin propiedad'}"></td>
+
+                <td th:text="${contrato.propiedad != null && contrato.propiedad.propietario != null ? contrato.propiedad.propietario.nombre + ' ' + contrato.propiedad.propietario.apellido : 'Sin propietario'}"></td>
+
+                <td th:text="${contrato.inquilino != null ? contrato.inquilino.nombre + ' ' + contrato.inquilino.apellido : 'Sin inquilino'}"></td>
+
                 <td th:text="${contrato.fechaInicio}"></td>
+
                 <td th:text="${contrato.duracionMeses}"></td>
+
                 <td th:text="${contrato.importeMensual}"></td>
+
                 <td th:text="${contrato.diaVencimientoMensual}"></td>
+
                 <td>
                     <span class="badge"
                           th:classappend="${'badge-' + contrato.estadoContrato.name()}"
                           th:text="${contrato.estadoContrato}"></span>
                 </td>
+
                 <td style="white-space:nowrap;">
                     <a th:href="@{/contratos/editar/{id}(id=${contrato.id})}"
                        class="btn btn-primary btn-small">Editar</a>
+
                     <form method="post"
                           th:action="@{/contratos/eliminar/{id}(id=${contrato.id})}"
                           style="display:inline;"
@@ -251,14 +338,17 @@
                     </form>
                 </td>
             </tr>
+
             <tr th:if="${contratos == null || contratos.isEmpty()}">
-                <td colspan="9" style="text-align:center; color:#999; padding:20px;">
+                <td colspan="10" style="text-align:center; color:#999; padding:20px;">
                     No hay contratos para mostrar.
                 </td>
             </tr>
         </tbody>
     </table>
 </div>
-
+<div>
+	<a th:href="@{/}" class="btn btn-secondary">Volver</a>
+</div>
 </body>
 </html>
