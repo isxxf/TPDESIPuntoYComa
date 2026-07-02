@@ -18,12 +18,19 @@ git clone <URL del repositorio>
 -Una vez levantado, abre tu navegador y accede a localhost:<puerto>.
 
 //5. Probar operaciones
+
 EPIC 1 - PROPIEDADES:
+
 -Intenta cargar una nueva propiedad en la aplicación.
+
 -Prueba editar o eliminar una propiedad existente.
+
 -Controla el listado de tus propiedades.
 
+
+
 EPIC 2 - PUBLICACIONES:
+
 -Intenta registrar una nueva publicación seleccionando una propiedad (asegurarse de que la propiedad esté DISPONIBLE).
 
 -Intentar crear una segunda publicación en estado ACTIVA para esa misma propiedad (el sistema debe arrojar error).
@@ -39,13 +46,22 @@ EPIC 2 - PUBLICACIONES:
 -Elimina una publicación en estado ACTIVA (verificar que desaparezca del listado pero persista en base de datos como borrado lógico).
 
 
+
 EPIC 3 - CONTRATOS
+
 -Crear un contrato en estado BORRADOR.
+
 -Editarlo y pasarlo a ACTIVO.
+
 -Verificar que la propiedad pase a ALQUILADA.
+
 -Pasarlo a FINALIZADO o RESCINDIDO.
+
 -Verificar que no permita volver a ACTIVO.
+
 -Intentar eliminar un contrato ACTIVO.
+
 -Eliminar un contrato BORRADOR.
+
 
 EPIC 4 -
