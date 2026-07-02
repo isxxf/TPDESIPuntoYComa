@@ -23,7 +23,14 @@ EPIC 1 - PROPIEDADES:
 -Prueba editar o eliminar una propiedad existente.
 -Controla el listado de tus propiedades.
 
-EPIC 2 - 
+EPIC 2 - PUBLICACIONES:
+- Intenta registrar una nueva publicación seleccionando una propiedad (asegurarse de que la propiedad esté DISPONIBLE).
+- Intentar crear una segunda publicación en estado ACTIVA para esa misma propiedad (el sistema debe arrojar error).
+- Controla el listado utilizando los filtros combinados
+- Edita una publicación existente y cambiar su estado a PAUSADA, y luego a FINALIZADA.
+- Intentar modificar las condiciones de una publicación que ya se encuentra en estado FINALIZADA (no debería permitirlo).
+- Intentar eliminar una publicación que se encuentre en estado PAUSADA o FINALIZADA (el sistema debe rechazarlo).
+- Elimina una publicación en estado ACTIVA (verificar que desaparezca del listado pero persista en base de datos como borrado lógico).
 
 EPIC 3 - CONTRATOS
 -Crear un contrato en estado BORRADOR.
